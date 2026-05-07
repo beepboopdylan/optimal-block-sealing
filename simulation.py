@@ -11,10 +11,14 @@ Each Ethereum transaction has:
 The builder can accept or reject any incoming transaction.
 
 To optimize a block, the builder wants to maximize v/w (value per gas unit).
-At each transaction, there are 2 decisions: include it in the block, or exclude.
+At each transaction, there are 2 decisions: include it in the block, or save space for a better one.
 
 We define a threshold to determine which transaction is worth taking, based on
-how much gas the builder has remaining.
+how much gas the builder has remaining. We need to precompute shadow price p(b), which
+is the expected cost of consuming one gas unit when b gas remains.
+
+The threshold policy is derived from the equlibrium condition:
+
 
 Data Format:
 
