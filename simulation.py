@@ -119,7 +119,7 @@ def thompson_sampling(values, gas_costs, B, mu, lamda_prior=1.0, prior_alpha=1.0
         # current_threshold = mean_density / (1 + mu/lamda_prior)
 
         # higher mu (slot ending rate faster) or lower lambda (few arrivals) leads to lower threshold
-        mean_density = alpha / beta
+        mean_density = beta / alpha
         current_threshold = mean_density / (1.0 + mu / lamda_prior)
         thresholds.append(current_threshold)
         
@@ -139,12 +139,3 @@ def thompson_sampling(values, gas_costs, B, mu, lamda_prior=1.0, prior_alpha=1.0
         beta += density
 
     return (total, thresholds)
-
-
-values   = np.array([6., 4., 3., 2.])
-gas_costs = np.array([3,  2,  2,  1])
-B = 4
-
-print(offline_knapsack(values, gas_costs, B))   # expect 8.0
-print(greedy_unsorted(values, gas_costs, B))     # expect 8.0
-print(greedy_sorted(values, gas_costs, B))       # expect 8.0 or close
