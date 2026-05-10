@@ -1,7 +1,7 @@
 # Optimal Block Sealing in Ethereum's PBS Architecture
 
 **Dylan Tran · Audrey Acken · Colin Calvetti**
-CS 6998 — Blockchains and Cryptocurrencies, Columbia University
+CS 6998 — Blockchains
 
 ---
 
