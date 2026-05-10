@@ -156,6 +156,5 @@ Two builders draw independent transaction streams and run their policies. Winner
 ## References
 
 - Roughgarden, T. *CS 261 Lecture 28: Algorithmic Game Theory* (threshold policy derivation)
-- Daian et al. *Flash Boys 2.0* (frontrunning and MEV in Ethereum)
-- Schwarz-Schilling et al. *Time is Money: Strategic Timing Games in PBS*
+- Daian et al. *Flash Boys 2.0* (frontrunning and MEV in Ethereum
 - Cianflone, A. [Thompson Sampling reference implementation](https://github.com/andrecianflone/thompson)
