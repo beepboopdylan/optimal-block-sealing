@@ -187,7 +187,9 @@ def thompson_sampling(values, gas_costs, B, mu, lamda_prior=1.0, prior_alpha=1.0
             continue
 
         # higher mu (slot ending rate faster) or lower lambda (few arrivals) leads to lower threshold
-        mean_density = beta / alpha
+        theta_sample = np.random.gamma(alpha, 1.0 / beta)
+        mean_density = 1.0 / theta_sample
+        
         current_threshold = mean_density / (1.0 + mu / lamda_est)
         thresholds.append(current_threshold)
 
