@@ -62,10 +62,9 @@ Reproduces all figures used in the report:
 
 | Cell | Figure | Saved to |
 |------|--------|----------|
-| Comparison of all algos | Single-slot bar chart | `figures/single_slot.png` |
-| Thompson convergence | Threshold evolution | `figures/thompson_convergence.png` |
 | Competitive ratio sweep | Ratio vs. load λ/μ | `figures/competitive_ratio.png` |
-| Two-builder competition | Efficiency loss by matchup | `figures/two_builder.png` |
+| Variance vs. load | Outcome std dev vs. load λ/μ | `figures/variance_vs_load.png` |
+| Two-builder competition | Efficiency loss table by matchup | `figures/two_builder_table.png` |
 | Sensitivity analysis | Ratio across value distributions | `figures/sensitivity.png` |
 
 Figures are written to the `figures/` directory (created automatically).
@@ -110,14 +109,11 @@ Optimal in hindsight — sees all transactions before deciding. Solved via dynam
 ### Greedy Online (`greedy_unsorted`)
 Accept every transaction that fits in the remaining gas capacity, first-come first-served. Naive baseline. Performs poorly under high load because it wastes capacity on low-density transactions early in the slot.
 
-### Greedy Density-Sorted (`greedy_sorted`)
-Sort all transactions by value/gas density, then accept greedily. Offline — requires seeing the full stream first. Upper bound on greedy-style policies.
-
 ### Optimal Threshold — c\*(b) (`compute_threshold` + `apply_threshold`)
 Theoretically optimal online policy derived from the Bellman equation for the Poisson-deadline stopping model. Computes a shadow price c\*(b) for each remaining gas level b — accept a transaction if and only if its value/gas density exceeds c\*(b). Requires knowing the arrival rate λ, slot-end rate μ, and value distribution upfront.
 
 ### Thompson Sampling (`thompson_sampling`)
-Practical adaptive policy. Maintains a Bayesian posterior over transaction density using a Gamma prior, updated online after each observed transaction. Sets the acceptance threshold from the posterior mean, adjusted for the urgency of the slot ending. Requires no upfront distributional knowledge — learns λ and the value distribution in real time.
+Practical adaptive policy. Maintains a Gamma posterior over transaction density, updated online after each observed transaction. At each step, **samples** a threshold from the posterior (true Thompson exploration) rather than using the posterior mean, adjusted for slot-end urgency via μ/λ. Requires no upfront distributional knowledge — learns λ and the value distribution in real time.
 
 ---
 
@@ -131,6 +127,18 @@ Practical adaptive policy. Maintains a Bayesian posterior over transaction densi
 | Load | λ/μ | 15 | Expected transactions per slot; algorithms diverge when load >> B/gas_mean |
 
 The model uses **Poisson arrivals** with an **exponential deadline** (memoryless slot end), which makes the optimal threshold c\*(b) depend only on remaining gas — not on elapsed time. This is the key structural property exploited by the Bellman derivation.
+
+---
+
+## Key Results
+
+**Competitive ratio vs. load** — Greedy and Thompson invert as load increases. At low load (λ/μ ≤ 2), Greedy achieves a perfect 1.0 competitive ratio (accepting everything is optimal when the block never fills) while Thompson's uninformed posterior over-rejects, bottoming at 0.48. Past load ~15, Greedy collapses to 0.54 at load 40 while Thompson improves monotonically to 0.74, nearly matching Threshold (0.77).
+
+**Variance vs. load** — Thompson carries the highest outcome variance of all online policies at high load (std 0.59 vs Greedy's 0.26 at load 40, both normalized to OPT mean). This persistent variance — from posterior sampling rather than deterministic decisions — is the direct cause of Thompson's weak showing in competition.
+
+**Two-builder competition** — Thompson vs Thompson (34.0% efficiency loss) is the worst matchup, worse than Greedy vs Greedy (24.5%), because high variance means both builders can simultaneously misfire on the same slot. Threshold vs Threshold achieves the best outcome at 11.3% loss.
+
+**Distribution sensitivity** — Threshold's edge over Thompson shrinks from 0.27 on Exponential (its calibration distribution) to 0.10 on Pareto. Thompson improves on heavy-tailed distributions while Threshold degrades, closing most of the gap when the distributional assumption is violated.
 
 ---
 
