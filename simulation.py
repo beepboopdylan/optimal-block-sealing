@@ -45,24 +45,6 @@ def greedy_unsorted(values, gas_costs, B):
             remaining -= g
     return total
 
-# greedy sorted by v/w in descending order.
-def greedy_sorted(values, gas_costs, B):
-    if len(values) == 0:
-        return 0.0
-
-    densities = values / gas_costs
-    order = np.argsort(densities)[::-1]
-
-    remaining = B
-    total = 0.0
-
-    for d in order:
-        g = int(gas_costs[d])
-        if g <= remaining:
-            total += values[d]
-            remaining -= g
-    return total
-
 # Theoretically optimal threshold benchmark with Poisson
 
 def compute_threshold(B, lam, mu, n_samples=40_000):
@@ -189,7 +171,7 @@ def thompson_sampling(values, gas_costs, B, mu, lamda_prior=1.0, prior_alpha=1.0
         # higher mu (slot ending rate faster) or lower lambda (few arrivals) leads to lower threshold
         theta_sample = np.random.gamma(alpha, 1.0 / beta)
         mean_density = 1.0 / theta_sample
-        
+
         current_threshold = mean_density / (1.0 + mu / lamda_est)
         thresholds.append(current_threshold)
 
